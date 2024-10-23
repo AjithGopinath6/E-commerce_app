@@ -11,6 +11,7 @@ function Collection() {
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subcategory, setSubCategory] = useState([]);
+  const [sortType, setSortType] = useState('relevant');
 
   const toggleCategory = (e) =>{
     if(category.includes(e.target.value)){
@@ -30,7 +31,8 @@ function Collection() {
     }
   }
 
-  const applyFilter = () => {
+  const applyFilter = (e) => {
+
     let productCopy = products.slice();
 
     if (category.length > 0) {
@@ -44,6 +46,30 @@ function Collection() {
     setFilterProducts(productCopy);
   }
 
+  const sortFilter = () => {
+
+    let fpCopy = filterProducts.slice();
+    
+    switch(sortType.toLowerCase()){
+      case 'low-to-high':
+        setFilterProducts(fpCopy.sort((a, b)=>(a.price - b.price)));
+        break;
+
+      case 'high-to-low':
+        setFilterProducts(fpCopy.sort((a, b)=> (b.price - a.price)));
+        break;
+
+      case 'relevant':
+        applyFilter();
+        break;
+
+      default:
+        applyFilter();
+    }
+    // setFilterProducts(fpCopy);
+  } 
+
+
   // useEffect(()=>{
   //   setFilterProducts(products);
   // },[]) its not needed. because it is already applied in applyFilter
@@ -51,6 +77,10 @@ function Collection() {
   useEffect(() => {
     applyFilter();
   },[category,subcategory]);
+
+  useEffect(()=>{
+    sortFilter();
+  },[sortType, products, category, subcategory])
 
   // useEffect(()=>{
   //   console.log(subcategory);
@@ -101,10 +131,10 @@ function Collection() {
         <div className='flex justify-between text-base sm:text-2xl mb-4'>
           <Title text1={'ALL'} text2={'COLLECTIONS'}/>
           {/* Selection sort */}
-          <select className='border border-gray-400 px-2'>
-            <option value="Relevent">Sort by Relevent</option>
-            <option value="Low-to-high">Sort by Low to High</option>
-            <option value="High-to-low">Sort by High to low</option>
+          <select  onChange={(e)=>setSortType(e.target.value)} className='border border-gray-400 px-2'>
+            <option value="relevant">Sort by Relevent</option>
+            <option value="low-to-high">Sort by Low to High</option>
+            <option value="high-to-low">Sort by High to low</option>
           </select>
         </div>
         {/* Products */}
