@@ -9,10 +9,54 @@ function Collection() {
   const {products} = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [subcategory, setSubCategory] = useState([]);
 
-  useEffect(()=>{
-    setFilterProducts(products);
-  },[])
+  const toggleCategory = (e) =>{
+    if(category.includes(e.target.value)){
+      setCategory(prev=>prev.filter(item=>item!==e.target.value));
+    }
+    else{
+      setCategory(prev=>[...prev, e.target.value])
+    }
+  }
+
+  const toggleSubCategory = (e)=>{
+    if(subcategory.includes(e.target.value)){
+      setSubCategory(prev=>prev.filter(item => item !== e.target.value));
+    }
+    else{
+      setSubCategory(prev => [...prev, e.target.value])
+    }
+  }
+
+  const applyFilter = () => {
+    let productCopy = products.slice();
+
+    if (category.length > 0) {
+      productCopy = productCopy.filter(item=> category.includes(item.category));
+    }
+
+    if (subcategory.length > 0) {
+      productCopy = productCopy.filter(item=> subcategory.includes(item.subCategory));
+    }
+
+    setFilterProducts(productCopy);
+  }
+
+  // useEffect(()=>{
+  //   setFilterProducts(products);
+  // },[]) its not needed. because it is already applied in applyFilter
+
+  useEffect(() => {
+    applyFilter();
+  },[category,subcategory]);
+
+  // useEffect(()=>{
+  //   console.log(subcategory);
+  // },[subcategory])
+
+  
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -26,13 +70,13 @@ function Collection() {
           <p className='mb-3 text-sm font-medium'>CATEGORUES</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'men'}/>Men
+              <input className='w-3' type="checkbox" value={'Men'} onChange={toggleCategory}/>Men
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'women'}/>Women
+              <input className='w-3' type="checkbox" value={'Women'} onChange={toggleCategory}/>Women
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'kids'}/>Kids
+              <input className='w-3' type="checkbox" value={'Kids'} onChange={toggleCategory}/>Kids
             </p>
           </div>
         </div>
@@ -41,13 +85,13 @@ function Collection() {
           <p className='mb-3 text-sm font-medium'>Type</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Topwear'}/>Topwear
+              <input className='w-3' type="checkbox" value={'Topwear'} onChange={toggleSubCategory}/>Topwear
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Bottomwear'}/>Bottomwear
+              <input className='w-3' type="checkbox" value={'Bottomwear'} onChange={toggleSubCategory}/>Bottomwear
             </p>
             <p className='flex gap-2'>
-              <input className='w-3' type="checkbox" value={'Winterwear'}/>Winterwear
+              <input className='w-3' type="checkbox" value={'Winterwear'} onChange={toggleSubCategory}/>Winterwear
             </p>
           </div>
         </div>
@@ -66,7 +110,7 @@ function Collection() {
         {/* Products */}
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6'>
           {
-            products.map((item,index)=>{
+            filterProducts.map((item,index)=>{
               return(
                 <ProductItems key={index} id= {item.id} name={item.name} image={item.image} price={item.price} />
               )
