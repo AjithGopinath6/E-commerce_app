@@ -35,6 +35,10 @@ function Collection() {
 
     let productCopy = products.slice();
 
+    if (showSearch && search){
+      productCopy = productCopy.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+    }
+
     if (category.length > 0) {
       productCopy = productCopy.filter(item=> category.includes(item.category));
     }
@@ -76,7 +80,7 @@ function Collection() {
 
   useEffect(() => {
     applyFilter();
-  },[category,subcategory]);
+  },[category,subcategory, search, showSearch]);
 
   useEffect(()=>{
     sortFilter();
